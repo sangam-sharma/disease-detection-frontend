@@ -1,0 +1,2071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediFuse — Multimodal Disease Diagnosis & Forecasting</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Fraunces:ital,wght@0,300;0,600;0,700;1,300;1,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f0f4f8;
+    --surface: #ffffff;
+    --surface-2: #e8eef5;
+    --border: #d0dce8;
+    --navy: #0d2340;
+    --blue: #1a5fad;
+    --blue-mid: #2e7dd6;
+    --blue-light: #ddeeff;
+    --teal: #0ea5a0;
+    --teal-light: #d0f4f2;
+    --amber: #e8a020;
+    --red: #d63c3c;
+    --green: #2a9d5c;
+    --text: #1a2535;
+    --text-2: #4a6278;
+    --text-3: #7a94a8;
+    --shadow: 0 2px 16px rgba(13,35,64,0.08);
+    --shadow-lg: 0 8px 40px rgba(13,35,64,0.14);
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── NAVIGATION ── */
+  .topbar {
+    background: var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -.3px;
+  }
+  .logo span { color: #5cb8ff; }
+  .nav-links {
+    display: flex;
+    gap: 6px;
+    list-style: none;
+  }
+  .nav-links a {
+    color: rgba(255,255,255,.72);
+    text-decoration: none;
+    font-size: 13.5px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: all .2s;
+  }
+  .nav-links a:hover, .nav-links a.active {
+    color: #fff;
+    background: rgba(255,255,255,.12);
+  }
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .lang-btn {
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.2);
+    color: #fff;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2e7dd6, #0ea5a0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* ── LAYOUT ── */
+  .layout {
+    display: flex;
+    min-height: calc(100vh - 60px);
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 230px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    flex-shrink: 0;
+    position: sticky;
+    top: 60px;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+  }
+  .sidebar-section {
+    margin-bottom: 6px;
+  }
+  .sidebar-label {
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-3);
+    padding: 10px 20px 6px;
+  }
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    color: var(--text-2);
+    cursor: pointer;
+    border-radius: 0;
+    font-size: 14px;
+    transition: all .15s;
+    border-left: 3px solid transparent;
+  }
+  .sidebar-item:hover {
+    background: var(--blue-light);
+    color: var(--blue);
+  }
+  .sidebar-item.active {
+    background: var(--blue-light);
+    color: var(--blue);
+    border-left-color: var(--blue);
+    font-weight: 500;
+  }
+  .sidebar-icon { font-size: 16px; width: 20px; text-align: center; }
+  .sidebar-badge {
+    margin-left: auto;
+    background: var(--red);
+    color: #fff;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  /* ── MAIN CONTENT ── */
+  .main {
+    flex: 1;
+    padding: 28px;
+    max-width: calc(100% - 230px);
+  }
+
+  /* ── PAGE TABS (simulated navigation) ── */
+  .page-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .page-tab {
+    padding: 7px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text-2);
+    font-family: 'DM Sans', sans-serif;
+    transition: all .2s;
+    font-weight: 500;
+  }
+  .page-tab:hover {
+    border-color: var(--blue-mid);
+    color: var(--blue);
+  }
+  .page-tab.active {
+    background: var(--navy);
+    color: #fff;
+    border-color: var(--navy);
+  }
+
+  /* Show/hide pages */
+  .screen { display: none; }
+  .screen.visible { display: block; }
+
+  /* ── TYPOGRAPHY ── */
+  .page-title {
+    font-family: 'Fraunces', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+  .page-subtitle {
+    color: var(--text-2);
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+  h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 12px;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--shadow);
+  }
+  .card-sm { padding: 16px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+
+  /* ── STAT CARDS ── */
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .stat-card.blue::before { background: var(--blue-mid); }
+  .stat-card.teal::before { background: var(--teal); }
+  .stat-card.amber::before { background: var(--amber); }
+  .stat-card.red::before { background: var(--red); }
+  .stat-label { font-size: 12px; color: var(--text-3); font-weight: 500; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+  .stat-value { font-family: 'Fraunces', serif; font-size: 30px; font-weight: 700; color: var(--navy); }
+  .stat-sub { font-size: 12px; color: var(--text-3); margin-top: 4px; }
+  .stat-up { color: var(--green); font-weight: 600; }
+  .stat-down { color: var(--red); font-weight: 600; }
+
+  /* ── RISK BADGES ── */
+  .risk-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+  .risk-low { background: #d2f5e5; color: #186640; }
+  .risk-medium { background: #fef3cd; color: #8a5a00; }
+  .risk-high { background: #fde8e8; color: #b02020; }
+  .risk-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    transition: all .2s;
+  }
+  .btn-primary { background: var(--blue); color: #fff; }
+  .btn-primary:hover { background: var(--navy); }
+  .btn-secondary { background: var(--surface); color: var(--text); border: 1.5px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--blue); color: var(--blue); }
+  .btn-teal { background: var(--teal); color: #fff; }
+  .btn-sm { padding: 6px 14px; font-size: 13px; }
+  .btn-lg { padding: 13px 28px; font-size: 15px; }
+
+  /* ── STEP INDICATOR ── */
+  .steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 28px;
+  }
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    color: var(--text-3);
+  }
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-3);
+  }
+  .step.done .step-num { background: var(--green); border-color: var(--green); color: #fff; }
+  .step.active .step-num { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .step.active { color: var(--blue); font-weight: 600; }
+  .step-line {
+    flex: 1;
+    height: 2px;
+    background: var(--border);
+    margin: 0 10px;
+  }
+  .step-line.done { background: var(--green); }
+
+  /* ── UPLOAD ZONES ── */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+    background: var(--surface);
+  }
+  .upload-zone:hover {
+    border-color: var(--blue-mid);
+    background: var(--blue-light);
+  }
+  .upload-icon { font-size: 36px; margin-bottom: 10px; }
+  .upload-title { font-weight: 600; color: var(--navy); margin-bottom: 4px; }
+  .upload-sub { font-size: 13px; color: var(--text-3); }
+
+  /* ── GAUGE CHART ── */
+  .gauge-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .gauge-svg { overflow: visible; }
+
+  /* ── DISEASE PREDICTION CARD ── */
+  .disease-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    box-shadow: var(--shadow);
+  }
+  .disease-name {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--navy);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .prob-bar-bg {
+    height: 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .prob-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s ease;
+  }
+  .prob-label {
+    font-size: 12.5px;
+    color: var(--text-2);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* ── HEATMAP ── */
+  .heatmap-grid {
+    display: grid;
+    grid-template-columns: auto repeat(8, 1fr);
+    gap: 2px;
+    font-size: 11px;
+  }
+  .hm-cell {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: rgba(255,255,255,.9);
+  }
+  .hm-label {
+    display: flex;
+    align-items: center;
+    padding: 2px 6px;
+    font-size: 11px;
+    color: var(--text-2);
+    white-space: nowrap;
+  }
+  .hm-header {
+    padding: 4px 2px;
+    font-size: 10px;
+    color: var(--text-3);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    height: 70px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  /* ── SHAP PLOT ── */
+  .shap-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  .shap-feature { width: 140px; text-align: right; color: var(--text-2); font-size: 12.5px; flex-shrink: 0; }
+  .shap-bar-container { flex: 1; display: flex; align-items: center; gap: 4px; }
+  .shap-bar { height: 18px; border-radius: 3px; min-width: 4px; transition: width .8s; }
+  .shap-val { font-size: 11.5px; color: var(--text-3); white-space: nowrap; }
+  .shap-pos { background: linear-gradient(90deg, #d63c3c, #f87575); }
+  .shap-neg { background: linear-gradient(90deg, #2a9d5c, #56c990); }
+
+  /* ── MAP PLACEHOLDER ── */
+  .map-placeholder {
+    background: linear-gradient(135deg, #e8eef5 0%, #d0dce8 100%);
+    border-radius: var(--radius);
+    height: 280px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .map-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(26,95,173,.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26,95,173,.06) 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+  .map-pin {
+    position: absolute;
+    width: 24px; height: 24px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .map-pin-inner { width: 10px; height: 10px; background: #fff; border-radius: 50%; transform: rotate(45deg); }
+  .map-pin.blue { background: var(--blue); }
+  .map-pin.teal { background: var(--teal); }
+  .map-pin.red { background: var(--red); }
+  .hospital-card-map {
+    position: absolute;
+    background: white;
+    border-radius: 10px;
+    padding: 10px 14px;
+    box-shadow: var(--shadow-lg);
+    font-size: 12.5px;
+    min-width: 160px;
+  }
+  .hospital-card-map strong { display: block; font-size: 13px; color: var(--navy); }
+  .hospital-card-map .dist { color: var(--teal); font-weight: 600; }
+
+  /* ── FORM ELEMENTS ── */
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 13px; font-weight: 500; color: var(--text-2); margin-bottom: 6px; display: block; }
+  .form-input {
+    width: 100%;
+    padding: 9px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: var(--surface);
+    outline: none;
+    transition: border-color .2s;
+  }
+  .form-input:focus { border-color: var(--blue-mid); }
+  .form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a94a8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+  textarea.form-input { min-height: 90px; resize: vertical; }
+
+  /* ── TABLE ── */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .data-table th {
+    background: var(--bg);
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--text-3);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+  }
+  .data-table td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--surface-2);
+    color: var(--text);
+  }
+  .data-table tr:hover td { background: var(--blue-light); }
+
+  /* ── GRADCAM PLACEHOLDER ── */
+  .gradcam-wrapper {
+    position: relative;
+    display: inline-block;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  .gradcam-base {
+    width: 220px;
+    height: 220px;
+    background: #1a1a2e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .gradcam-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60px 50px at 55% 38%, rgba(255,80,0,.7) 0%, rgba(255,200,0,.3) 50%, transparent 80%);
+  }
+  .gradcam-ribs {
+    position: relative;
+    width: 180px;
+    height: 180px;
+  }
+
+  /* ── LANG MODAL ── */
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(13,35,64,.4);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 28px;
+    width: 440px;
+    box-shadow: var(--shadow-lg);
+  }
+  .modal-title {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+  .lang-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .lang-opt {
+    padding: 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+    font-size: 13.5px;
+  }
+  .lang-opt:hover { border-color: var(--blue); background: var(--blue-light); }
+  .lang-opt.selected { border-color: var(--blue); background: var(--blue-light); color: var(--blue); font-weight: 600; }
+  .lang-native { font-size: 16px; display: block; margin-bottom: 3px; }
+
+  /* ── LOGIN ── */
+  .login-wrapper {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--navy) 0%, #0f3a6b 60%, #0d5a7a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .login-card {
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 42px 40px;
+    width: 420px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  }
+  .login-logo {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .login-logo span { color: var(--blue); }
+  .login-sub { color: var(--text-2); font-size: 14px; margin-bottom: 30px; }
+  .role-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 22px;
+  }
+  .role-opt {
+    padding: 12px 8px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+    font-size: 13px;
+  }
+  .role-opt:hover { border-color: var(--blue); background: var(--blue-light); }
+  .role-opt.active { background: var(--navy); color: white; border-color: var(--navy); }
+  .role-icon { font-size: 22px; display: block; margin-bottom: 5px; }
+
+  /* ── ADMIN ── */
+  .admin-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: center;
+  }
+  .admin-stat-val { font-family: 'Fraunces', serif; font-size: 36px; font-weight: 700; color: var(--navy); }
+  .admin-stat-lbl { font-size: 12.5px; color: var(--text-3); margin-top: 2px; }
+
+  /* ── LANDING ── */
+  .landing-hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #124a8c 100%);
+    padding: 70px 60px;
+    border-radius: var(--radius);
+    color: white;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .landing-hero::before {
+    content: '';
+    position: absolute;
+    right: -60px; top: -60px;
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.04);
+  }
+  .landing-hero::after {
+    content: '';
+    position: absolute;
+    right: 80px; bottom: -100px;
+    width: 240px; height: 240px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.03);
+  }
+  .hero-tag {
+    display: inline-block;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.2);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12.5px;
+    margin-bottom: 18px;
+  }
+  .hero-title {
+    font-family: 'Fraunces', serif;
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 14px;
+  }
+  .hero-title em { font-style: italic; color: #5cb8ff; }
+  .hero-desc { font-size: 16px; opacity: .78; max-width: 520px; margin-bottom: 28px; line-height: 1.7; }
+  .hero-btns { display: flex; gap: 12px; }
+
+  .feature-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 7px 14px;
+    font-size: 13px;
+    color: var(--text-2);
+    margin: 4px;
+    box-shadow: var(--shadow);
+  }
+  .feature-pill-icon { font-size: 15px; }
+
+  /* ── REPORT ── */
+  .report-preview {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    max-width: 680px;
+    box-shadow: var(--shadow);
+    font-size: 13.5px;
+  }
+  .report-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--navy);
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+  }
+  .report-logo { font-family: 'Fraunces', serif; font-size: 20px; color: var(--navy); font-weight: 700; }
+  .report-meta { font-size: 12px; color: var(--text-2); text-align: right; }
+  .report-section { margin-bottom: 18px; }
+  .report-section-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-3);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  /* ── MISC ── */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .tag-blue { background: var(--blue-light); color: var(--blue); }
+  .tag-teal { background: var(--teal-light); color: #0a7a76; }
+
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+  .mb-4 { margin-bottom: 4px; }
+  .mb-8 { margin-bottom: 8px; }
+  .mb-16 { margin-bottom: 16px; }
+  .mb-24 { margin-bottom: 24px; }
+  .flex { display: flex; }
+  .flex-col { flex-direction: column; }
+  .items-center { align-items: center; }
+  .justify-between { justify-content: space-between; }
+  .gap-8 { gap: 8px; }
+  .gap-12 { gap: 12px; }
+  .gap-16 { gap: 16px; }
+
+  /* ── ROC CURVE ── */
+  .roc-area { fill: rgba(26,95,173,.12); }
+  .roc-line { stroke: var(--blue); stroke-width: 2; fill: none; }
+  .roc-diag { stroke: var(--border); stroke-width: 1; stroke-dasharray: 4,4; fill: none; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { max-width: 100%; padding: 16px; }
+    .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
+    .grid-2 { grid-template-columns: 1fr; }
+    .hero-title { font-size: 28px; }
+    .landing-hero { padding: 36px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  LOGIN PAGE (shown standalone)                 -->
+<!-- ═══════════════════════════════════════════════ -->
+<div id="login-page" class="screen" style="min-height:100vh; background: linear-gradient(135deg, #0d2340 0%, #124a8c 60%, #0d5a7a 100%); display:flex; align-items:center; justify-content:center; padding:20px;">
+  <div class="login-card">
+    <div class="login-logo">Medi<span>Fuse</span></div>
+    <p class="login-sub">Multimodal Disease Diagnosis & Forecasting</p>
+    <p style="font-size:13px;color:var(--text-3);margin-bottom:14px;font-weight:500">Sign in as:</p>
+    <div class="role-selector">
+      <div class="role-opt active" onclick="selectRole(this,'Patient')">
+        <span class="role-icon">🧑‍⚕️</span>Patient
+      </div>
+      <div class="role-opt" onclick="selectRole(this,'Doctor')">
+        <span class="role-icon">👨‍⚕️</span>Doctor
+      </div>
+      <div class="role-opt" onclick="selectRole(this,'Admin')">
+        <span class="role-icon">⚙️</span>Admin
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email / Hospital ID</label>
+      <input class="form-input" type="email" placeholder="you@hospital.in">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" type="password" placeholder="••••••••">
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;font-size:13px;color:var(--text-3)">
+      <input type="checkbox" id="biometric"> <label for="biometric">Use Biometric / OTP</label>
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:15px;padding:12px;" onclick="showApp()">
+      Sign In →
+    </button>
+    <div style="margin-top:16px;display:flex;gap:10px;align-items:center">
+      <span style="font-size:12.5px;color:var(--text-3)">Language:</span>
+      <button class="lang-btn" style="color:var(--text-2);background:var(--surface-2);border:1px solid var(--border)" onclick="openLangModal()">🌐 English (EN)</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  MAIN APP SHELL                                -->
+<!-- ═══════════════════════════════════════════════ -->
+<div id="app-shell" class="screen">
+
+  <!-- TOPBAR -->
+  <nav class="topbar">
+    <div class="logo">Medi<span>Fuse</span></div>
+    <ul class="nav-links">
+      <li><a href="#" class="active" onclick="showScreen('landing')">Home</a></li>
+      <li><a href="#" onclick="showScreen('patient')">Patient</a></li>
+      <li><a href="#" onclick="showScreen('doctor')">Doctor</a></li>
+      <li><a href="#" onclick="showScreen('upload')">Upload</a></li>
+      <li><a href="#" onclick="showScreen('results')">Results</a></li>
+      <li><a href="#" onclick="showScreen('admin')">Admin</a></li>
+    </ul>
+    <div class="topbar-right">
+      <button class="lang-btn" onclick="openLangModal()">🌐 EN</button>
+      <div class="avatar" title="Dr. Meera K.">MK</div>
+    </div>
+  </nav>
+
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Navigation</div>
+        <div class="sidebar-item active" onclick="showScreen('landing')"><span class="sidebar-icon">🏠</span>Home</div>
+        <div class="sidebar-item" onclick="showScreen('patient')"><span class="sidebar-icon">👤</span>Patient Dashboard</div>
+        <div class="sidebar-item" onclick="showScreen('doctor')"><span class="sidebar-icon">🩺</span>Doctor Dashboard</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Diagnosis</div>
+        <div class="sidebar-item" onclick="showScreen('upload')"><span class="sidebar-icon">📤</span>Upload Data</div>
+        <div class="sidebar-item" onclick="showScreen('results')"><span class="sidebar-icon">📊</span>Prediction Results</div>
+        <div class="sidebar-item" onclick="showScreen('explain')"><span class="sidebar-icon">🔍</span>XAI Explanations</div>
+        <div class="sidebar-item" onclick="showScreen('heatmap')"><span class="sidebar-icon">🔥</span>Comorbidity Map</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Tools</div>
+        <div class="sidebar-item" onclick="showScreen('hospitals')"><span class="sidebar-icon">🗺️</span>Nearby Hospitals</div>
+        <div class="sidebar-item" onclick="showScreen('report')"><span class="sidebar-icon">📄</span>Download Report</div>
+        <div class="sidebar-item" onclick="showScreen('admin')"><span class="sidebar-icon">⚙️</span>Admin Panel<span class="sidebar-badge">3</span></div>
+      </div>
+    </aside>
+
+    <!-- CONTENT AREA -->
+    <main class="main">
+
+      <!-- PAGE TABS (micro nav) -->
+      <div class="page-tabs">
+        <button class="page-tab active" onclick="showScreen('landing')">🏠 Home</button>
+        <button class="page-tab" onclick="showScreen('patient')">👤 Patient</button>
+        <button class="page-tab" onclick="showScreen('doctor')">🩺 Doctor</button>
+        <button class="page-tab" onclick="showScreen('upload')">📤 Upload</button>
+        <button class="page-tab" onclick="showScreen('results')">📊 Results</button>
+        <button class="page-tab" onclick="showScreen('explain')">🔍 XAI</button>
+        <button class="page-tab" onclick="showScreen('heatmap')">🔥 Heatmap</button>
+        <button class="page-tab" onclick="showScreen('hospitals')">🗺️ Hospitals</button>
+        <button class="page-tab" onclick="showScreen('report')">📄 Report</button>
+        <button class="page-tab" onclick="showScreen('admin')">⚙️ Admin</button>
+      </div>
+
+      <!-- ══ SCREEN: LANDING ══ -->
+      <div id="screen-landing" class="screen visible">
+        <div class="landing-hero">
+          <div class="hero-tag">✦ AI-Powered · Multimodal · Explainable</div>
+          <h1 class="hero-title">Precision Diagnosis<br>for <em>Every Patient</em></h1>
+          <p class="hero-desc">Combine blood reports, medical imaging, and symptom narratives for AI-assisted disease prediction with full explainability — in your language.</p>
+          <div class="hero-btns">
+            <button class="btn btn-primary btn-lg" onclick="showScreen('upload')">Start Diagnosis →</button>
+            <button class="btn btn-secondary btn-lg" style="color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.08)">Watch Demo</button>
+          </div>
+        </div>
+
+        <div style="margin-bottom:28px;display:flex;flex-wrap:wrap;">
+          <div class="feature-pill"><span class="feature-pill-icon">🩸</span>Blood Reports</div>
+          <div class="feature-pill"><span class="feature-pill-icon">🫁</span>X-Ray / CT / MRI</div>
+          <div class="feature-pill"><span class="feature-pill-icon">📝</span>Clinical Notes</div>
+          <div class="feature-pill"><span class="feature-pill-icon">🌐</span>12 Indian Languages</div>
+          <div class="feature-pill"><span class="feature-pill-icon">🏥</span>Hospital Finder</div>
+          <div class="feature-pill"><span class="feature-pill-icon">🔍</span>SHAP + Grad-CAM</div>
+          <div class="feature-pill"><span class="feature-pill-icon">📄</span>PDF Reports</div>
+        </div>
+
+        <div class="grid-3 mb-24">
+          <div class="card" style="text-align:center;">
+            <div style="font-size:36px;margin-bottom:10px">🔬</div>
+            <h3 style="margin-bottom:6px">Multimodal Fusion</h3>
+            <p style="font-size:13.5px;color:var(--text-2)">Structured labs + imaging + text combined using deep learning for holistic diagnosis.</p>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div style="font-size:36px;margin-bottom:10px">🧠</div>
+            <h3 style="margin-bottom:6px">Explainable AI</h3>
+            <p style="font-size:13.5px;color:var(--text-2)">SHAP, LIME, and Grad-CAM show exactly why the AI made its prediction — trusted by clinicians.</p>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div style="font-size:36px;margin-bottom:10px">🗣️</div>
+            <h3 style="margin-bottom:6px">Multilingual</h3>
+            <p style="font-size:13.5px;color:var(--text-2)">Hindi, Tamil, Bengali, Telugu, Marathi & more — patients understand results in their language.</p>
+          </div>
+        </div>
+
+        <!-- Workflow visual -->
+        <div class="card mb-24">
+          <h3>How It Works</h3>
+          <div class="steps">
+            <div class="step done"><div class="step-num">✓</div><span>Upload Data</span></div>
+            <div class="step-line done"></div>
+            <div class="step done"><div class="step-num">✓</div><span>AI Processing</span></div>
+            <div class="step-line done"></div>
+            <div class="step active"><div class="step-num">3</div><span>Prediction</span></div>
+            <div class="step-line"></div>
+            <div class="step"><div class="step-num">4</div><span>Explanation</span></div>
+            <div class="step-line"></div>
+            <div class="step"><div class="step-num">5</div><span>Recommend</span></div>
+            <div class="step-line"></div>
+            <div class="step"><div class="step-num">6</div><span>Download Report</span></div>
+          </div>
+          <p style="font-size:13.5px;color:var(--text-2)">Our six-step pipeline takes you from raw patient data to a full clinical summary with hospital referrals — in under 90 seconds.</p>
+        </div>
+      </div>
+
+      <!-- ══ SCREEN: PATIENT DASHBOARD ══ -->
+      <div id="screen-patient" class="screen">
+        <h1 class="page-title">Patient Dashboard</h1>
+        <p class="page-subtitle">Ananya Sharma · ID: PT-2024-08821 · Last visit: 12 Feb 2026</p>
+
+        <div class="grid-4 mb-24">
+          <div class="stat-card blue">
+            <div class="stat-label">Risk Level</div>
+            <div class="stat-value" style="font-size:22px">Medium</div>
+            <div class="stat-sub">Last assessed 3 days ago</div>
+          </div>
+          <div class="stat-card teal">
+            <div class="stat-label">Active Conditions</div>
+            <div class="stat-value">2</div>
+            <div class="stat-sub">Hypertension, Prediabetes</div>
+          </div>
+          <div class="stat-card amber">
+            <div class="stat-label">Pending Tests</div>
+            <div class="stat-value">1</div>
+            <div class="stat-sub">HbA1c follow-up</div>
+          </div>
+          <div class="stat-card red">
+            <div class="stat-label">Alerts</div>
+            <div class="stat-value">2</div>
+            <div class="stat-sub">BP trend rising</div>
+          </div>
+        </div>
+
+        <div class="grid-2 mb-24">
+          <div class="card">
+            <h3>My Health Summary</h3>
+            <table class="data-table">
+              <thead><tr><th>Metric</th><th>Value</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Blood Pressure</td><td>138/88 mmHg</td><td><span class="tag tag-blue">Elevated</span></td></tr>
+                <tr><td>Blood Glucose (F)</td><td>112 mg/dL</td><td><span class="tag tag-blue">Borderline</span></td></tr>
+                <tr><td>BMI</td><td>27.4</td><td><span class="tag tag-blue">Overweight</span></td></tr>
+                <tr><td>Hemoglobin</td><td>11.8 g/dL</td><td><span class="risk-badge risk-medium">⚠ Low</span></td></tr>
+                <tr><td>Cholesterol</td><td>192 mg/dL</td><td><span class="risk-badge risk-low">✓ Normal</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card">
+            <h3>Recent Predictions</h3>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div class="disease-card">
+                <div class="disease-name">Type 2 Diabetes <span class="risk-badge risk-medium">Medium Risk</span></div>
+                <div class="prob-bar-bg"><div class="prob-bar-fill" style="width:62%;background:linear-gradient(90deg,#e8a020,#f5c95c)"></div></div>
+                <div class="prob-label"><span>62% probability</span><span>Updated 3 days ago</span></div>
+              </div>
+              <div class="disease-card">
+                <div class="disease-name">Hypertensive Heart Disease <span class="risk-badge risk-high">High Risk</span></div>
+                <div class="prob-bar-bg"><div class="prob-bar-fill" style="width:74%;background:linear-gradient(90deg,#d63c3c,#f87575)"></div></div>
+                <div class="prob-label"><span>74% probability</span><span>Updated 3 days ago</span></div>
+              </div>
+              <div class="disease-card">
+                <div class="disease-name">Anemia <span class="risk-badge risk-medium">Medium Risk</span></div>
+                <div class="prob-bar-bg"><div class="prob-bar-fill" style="width:55%;background:linear-gradient(90deg,#e8a020,#f5c95c)"></div></div>
+                <div class="prob-label"><span>55% probability</span><span>Updated 3 days ago</span></div>
+              </div>
+            </div>
+            <button class="btn btn-secondary btn-sm" style="margin-top:14px" onclick="showScreen('results')">View Full Results →</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <h3 style="margin:0">My Reports</h3>
+            <button class="btn btn-primary btn-sm" onclick="showScreen('upload')">+ New Upload</button>
+          </div>
+          <table class="data-table">
+            <thead><tr><th>Date</th><th>Type</th><th>Diseases Checked</th><th>Risk</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>12 Feb 2026</td><td><span class="tag tag-blue">Blood + Imaging</span></td><td>Diabetes, Hypertension, Anemia</td>
+                <td><span class="risk-badge risk-medium">Medium</span></td>
+                <td><button class="btn btn-secondary btn-sm" onclick="showScreen('report')">Download PDF</button></td>
+              </tr>
+              <tr>
+                <td>20 Jan 2026</td><td><span class="tag tag-teal">Text + Blood</span></td><td>Thyroid, Anemia</td>
+                <td><span class="risk-badge risk-low">Low</span></td>
+                <td><button class="btn btn-secondary btn-sm" onclick="showScreen('report')">Download PDF</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══ SCREEN: DOCTOR DASHBOARD ══ -->
+      <div id="screen-doctor" class="screen">
+        <h1 class="page-title">Doctor Dashboard</h1>
+        <p class="page-subtitle">Dr. Meera Krishnaswamy · MBBS, MD — General Medicine · Apollo Hospital, Chennai</p>
+
+        <div class="grid-4 mb-24">
+          <div class="stat-card blue">
+            <div class="stat-label">Today's Patients</div>
+            <div class="stat-value">14</div>
+            <div class="stat-sub stat-up">↑ 3 new</div>
+          </div>
+          <div class="stat-card red">
+            <div class="stat-label">High Risk</div>
+            <div class="stat-value">4</div>
+            <div class="stat-sub">Require urgent review</div>
+          </div>
+          <div class="stat-card teal">
+            <div class="stat-label">Pending Reports</div>
+            <div class="stat-value">7</div>
+            <div class="stat-sub">Awaiting sign-off</div>
+          </div>
+          <div class="stat-card amber">
+            <div class="stat-label">Model Accuracy</div>
+            <div class="stat-value">94.2%</div>
+            <div class="stat-sub">On validation set</div>
+          </div>
+        </div>
+
+        <div class="grid-2 mb-24">
+          <div class="card">
+            <h3>Patient Queue</h3>
+            <table class="data-table">
+              <thead><tr><th>Patient</th><th>Age/Sex</th><th>Prediction</th><th>Risk</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>Rajan T.</strong><br><span style="font-size:12px;color:var(--text-3)">PT-2024-00091</span></td>
+                  <td>58M</td>
+                  <td>Cardiac Disease</td>
+                  <td><span class="risk-badge risk-high">High</span></td>
+                  <td><button class="btn btn-primary btn-sm" onclick="showScreen('results')">Review</button></td>
+                </tr>
+                <tr>
+                  <td><strong>Priya S.</strong><br><span style="font-size:12px;color:var(--text-3)">PT-2024-00142</span></td>
+                  <td>34F</td>
+                  <td>Thyroid, Anemia</td>
+                  <td><span class="risk-badge risk-medium">Medium</span></td>
+                  <td><button class="btn btn-secondary btn-sm" onclick="showScreen('results')">Review</button></td>
+                </tr>
+                <tr>
+                  <td><strong>Ananya S.</strong><br><span style="font-size:12px;color:var(--text-3)">PT-2024-08821</span></td>
+                  <td>42F</td>
+                  <td>Diabetes, Hypertension</td>
+                  <td><span class="risk-badge risk-medium">Medium</span></td>
+                  <td><button class="btn btn-secondary btn-sm" onclick="showScreen('results')">Review</button></td>
+                </tr>
+                <tr>
+                  <td><strong>Mohammed K.</strong><br><span style="font-size:12px;color:var(--text-3)">PT-2024-00201</span></td>
+                  <td>65M</td>
+                  <td>COPD, Diabetes</td>
+                  <td><span class="risk-badge risk-high">High</span></td>
+                  <td><button class="btn btn-primary btn-sm" onclick="showScreen('results')">Review</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card">
+            <h3>Disease Distribution (This Week)</h3>
+            <!-- Bar chart SVG -->
+            <svg width="100%" viewBox="0 0 320 200" style="font-family:'DM Sans',sans-serif">
+              <!-- Y axis -->
+              <line x1="40" y1="10" x2="40" y2="160" stroke="var(--border)" stroke-width="1"/>
+              <line x1="40" y1="160" x2="310" y2="160" stroke="var(--border)" stroke-width="1"/>
+              <!-- Bars -->
+              <rect x="55" y="70" width="32" height="90" rx="4" fill="var(--blue-mid)" opacity=".85"/>
+              <rect x="100" y="90" width="32" height="70" rx="4" fill="var(--teal)" opacity=".85"/>
+              <rect x="145" y="110" width="32" height="50" rx="4" fill="var(--amber)" opacity=".85"/>
+              <rect x="190" y="40" width="32" height="120" rx="4" fill="var(--red)" opacity=".85"/>
+              <rect x="235" y="120" width="32" height="40" rx="4" fill="#7c5cbf" opacity=".85"/>
+              <rect x="275" y="100" width="32" height="60" rx="4" fill="#1a9e6e" opacity=".85"/>
+              <!-- Labels -->
+              <text x="71" y="178" text-anchor="middle" font-size="10" fill="var(--text-3)">Diabetes</text>
+              <text x="116" y="178" text-anchor="middle" font-size="10" fill="var(--text-3)">Cardiac</text>
+              <text x="161" y="178" text-anchor="middle" font-size="10" fill="var(--text-3)">Thyroid</text>
+              <text x="206" y="178" text-anchor="middle" font-size="10" fill="var(--text-3)">Hypert.</text>
+              <text x="251" y="178" text-anchor="middle" font-size="10" fill="var(--text-3)">COPD</text>
+              <text x="291" y="178" text-anchor="middle" font-size="10" fill="var(--text-3)">Anemia</text>
+              <!-- Values -->
+              <text x="71" y="64" text-anchor="middle" font-size="10" fill="var(--text-2)" font-weight="600">18</text>
+              <text x="116" y="84" text-anchor="middle" font-size="10" fill="var(--text-2)" font-weight="600">14</text>
+              <text x="161" y="104" text-anchor="middle" font-size="10" fill="var(--text-2)" font-weight="600">10</text>
+              <text x="206" y="34" text-anchor="middle" font-size="10" fill="var(--text-2)" font-weight="600">24</text>
+              <text x="251" y="114" text-anchor="middle" font-size="10" fill="var(--text-2)" font-weight="600">8</text>
+              <text x="291" y="94" text-anchor="middle" font-size="10" fill="var(--text-2)" font-weight="600">12</text>
+            </svg>
+
+            <div class="divider"></div>
+            <h3>ROC Curve — Current Model</h3>
+            <svg width="100%" viewBox="0 0 220 180" style="font-family:'DM Sans',sans-serif">
+              <defs>
+                <linearGradient id="rocGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="rgba(26,95,173,.3)"/>
+                  <stop offset="100%" stop-color="rgba(26,95,173,0)"/>
+                </linearGradient>
+              </defs>
+              <rect x="30" y="10" width="170" height="140" fill="none" stroke="var(--border)" rx="4"/>
+              <path d="M30,150 L200,10" class="roc-diag" stroke="var(--border)" stroke-dasharray="4,4"/>
+              <path d="M30,150 L42,130 L58,108 L80,80 L105,54 L130,36 L158,22 L185,16 L200,14 L200,150 Z" fill="url(#rocGrad)"/>
+              <path d="M30,150 L42,130 L58,108 L80,80 L105,54 L130,36 L158,22 L185,16 L200,14" class="roc-line" stroke="var(--blue)" stroke-width="2.5"/>
+              <text x="115" y="100" font-size="11" fill="var(--blue)" font-weight="700">AUC = 0.942</text>
+              <text x="32" y="168" font-size="9" fill="var(--text-3)">False Positive Rate →</text>
+              <text x="8" y="95" font-size="9" fill="var(--text-3)" transform="rotate(-90,8,95)">True Positive Rate</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SCREEN: UPLOAD ══ -->
+      <div id="screen-upload" class="screen">
+        <h1 class="page-title">Upload Patient Data</h1>
+        <p class="page-subtitle">Step 1 of 3 — Provide multimodal inputs for AI diagnosis</p>
+
+        <div class="steps mb-24">
+          <div class="step active"><div class="step-num">1</div><span>Upload Data</span></div>
+          <div class="step-line"></div>
+          <div class="step"><div class="step-num">2</div><span>AI Processing</span></div>
+          <div class="step-line"></div>
+          <div class="step"><div class="step-num">3</div><span>View Results</span></div>
+        </div>
+
+        <div class="grid-2 mb-24">
+          <!-- Patient Info -->
+          <div class="card">
+            <h3>Patient Demographics</h3>
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input class="form-input" placeholder="Patient name">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Age</label>
+                <input class="form-input" type="number" placeholder="Years">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Sex</label>
+                <select class="form-input form-select">
+                  <option>Male</option><option>Female</option><option>Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">City / District</label>
+                <input class="form-input" placeholder="e.g. Chennai, TN">
+              </div>
+            </div>
+          </div>
+
+          <!-- Structured Blood Data -->
+          <div class="card">
+            <h3>📋 Structured Blood Report</h3>
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">Hemoglobin (g/dL)</label>
+                <input class="form-input" placeholder="12.5">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Blood Glucose (mg/dL)</label>
+                <input class="form-input" placeholder="110">
+              </div>
+              <div class="form-group">
+                <label class="form-label">BP Systolic (mmHg)</label>
+                <input class="form-input" placeholder="130">
+              </div>
+              <div class="form-group">
+                <label class="form-label">BP Diastolic</label>
+                <input class="form-input" placeholder="85">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Cholesterol (mg/dL)</label>
+                <input class="form-input" placeholder="190">
+              </div>
+              <div class="form-group">
+                <label class="form-label">TSH (mIU/L)</label>
+                <input class="form-input" placeholder="2.4">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2 mb-24">
+          <!-- Image Upload -->
+          <div class="card">
+            <h3>🫁 Medical Imaging</h3>
+            <div class="upload-zone mb-16" onclick="this.style.borderColor='var(--blue)'">
+              <div class="upload-icon">🩻</div>
+              <div class="upload-title">Upload X-Ray / CT / MRI</div>
+              <div class="upload-sub">DICOM, JPEG, PNG · Max 50MB</div>
+              <button class="btn btn-secondary btn-sm" style="margin-top:12px">Choose File</button>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <span class="tag tag-blue">X-Ray</span>
+              <span class="tag tag-teal">CT Scan</span>
+              <span class="tag tag-blue">MRI</span>
+            </div>
+          </div>
+
+          <!-- Text Input -->
+          <div class="card">
+            <h3>📝 Symptom Description & Clinical Notes</h3>
+            <div class="form-group">
+              <label class="form-label">Input Language</label>
+              <select class="form-input form-select">
+                <option>English</option>
+                <option>हिन्दी (Hindi)</option>
+                <option>தமிழ் (Tamil)</option>
+                <option>বাংলা (Bengali)</option>
+                <option>తెలుగు (Telugu)</option>
+                <option>मराठी (Marathi)</option>
+                <option>ಕನ್ನಡ (Kannada)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Chief Complaints & Symptoms</label>
+              <textarea class="form-input" placeholder="Describe patient symptoms in your language...&#10;&#10;Example: Patient has been experiencing fatigue, frequent urination, and blurred vision for the past 3 months..."></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Previous Medical History</label>
+              <textarea class="form-input" style="min-height:60px" placeholder="Known conditions, surgeries, medications..."></textarea>
+            </div>
+            <button class="btn btn-secondary btn-sm">🎤 Voice Input</button>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px">
+          <button class="btn btn-primary btn-lg" onclick="showScreen('results')">🚀 Run AI Diagnosis →</button>
+          <button class="btn btn-secondary btn-lg">Save Draft</button>
+        </div>
+      </div>
+
+      <!-- ══ SCREEN: RESULTS ══ -->
+      <div id="screen-results" class="screen">
+        <h1 class="page-title">Disease Prediction Results</h1>
+        <p class="page-subtitle">Ananya Sharma · PT-2024-08821 · Analysed 12 Feb 2026, 14:32 IST</p>
+
+        <!-- Overall Risk -->
+        <div class="card mb-24" style="background:linear-gradient(135deg,#fff8f0,#fff3e8);border-color:#f0c070">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+            <div>
+              <div style="font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--amber);font-weight:600;margin-bottom:6px">Overall Risk Assessment</div>
+              <div style="font-family:'Fraunces',serif;font-size:32px;font-weight:700;color:#7a4a00">⚠ Medium-High Risk</div>
+              <p style="font-size:14px;color:var(--text-2);margin-top:6px">Multiple conditions detected with moderate-to-high probability. Physician review recommended within 48 hours.</p>
+            </div>
+            <!-- Gauge SVG -->
+            <svg width="160" height="100" viewBox="0 0 160 100">
+              <defs>
+                <linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#2a9d5c"/>
+                  <stop offset="50%" stop-color="#e8a020"/>
+                  <stop offset="100%" stop-color="#d63c3c"/>
+                </linearGradient>
+              </defs>
+              <path d="M20,90 A60,60 0 0,1 140,90" stroke="#e8eef5" stroke-width="14" fill="none" stroke-linecap="round"/>
+              <path d="M20,90 A60,60 0 0,1 140,90" stroke="url(#gaugeGrad)" stroke-width="14" fill="none" stroke-linecap="round" stroke-dasharray="188" stroke-dashoffset="70"/>
+              <line x1="80" y1="90" x2="118" y2="42" stroke="var(--navy)" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="80" cy="90" r="5" fill="var(--navy)"/>
+              <text x="80" y="108" text-anchor="middle" font-size="11" fill="var(--text-2)" font-weight="600">68% Risk Score</text>
+              <text x="18" y="106" font-size="9" fill="var(--green)">Low</text>
+              <text x="125" y="106" font-size="9" fill="var(--red)">High</text>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Disease Cards -->
+        <h3 class="mb-16">Predicted Conditions</h3>
+        <div class="grid-3 mb-24">
+          <div class="disease-card" style="border-left:4px solid var(--red)">
+            <div class="disease-name">Hypertensive Heart Disease<div class="risk-badge risk-high">High</div></div>
+            <div class="prob-bar-bg"><div class="prob-bar-fill" style="width:74%;background:linear-gradient(90deg,#d63c3c,#f87575)"></div></div>
+            <div class="prob-label"><span><strong>74%</strong> probability</span><span>🫀 Cardio</span></div>
+            <p style="font-size:12px;color:var(--text-3);margin-top:8px">Elevated BP, cardiac imaging anomaly, family history all contribute.</p>
+            <button class="btn btn-secondary btn-sm" style="margin-top:10px" onclick="showScreen('explain')">Why? (SHAP)</button>
+          </div>
+          <div class="disease-card" style="border-left:4px solid var(--amber)">
+            <div class="disease-name">Type 2 Diabetes<div class="risk-badge risk-medium">Medium</div></div>
+            <div class="prob-bar-bg"><div class="prob-bar-fill" style="width:62%;background:linear-gradient(90deg,#e8a020,#f5c95c)"></div></div>
+            <div class="prob-label"><span><strong>62%</strong> probability</span><span>🩸 Metabolic</span></div>
+            <p style="font-size:12px;color:var(--text-3);margin-top:8px">Fasting glucose 112, BMI 27.4, sedentary lifestyle reported.</p>
+            <button class="btn btn-secondary btn-sm" style="margin-top:10px" onclick="showScreen('explain')">Why? (SHAP)</button>
+          </div>
+          <div class="disease-card" style="border-left:4px solid var(--amber)">
+            <div class="disease-name">Iron Deficiency Anemia<div class="risk-badge risk-medium">Medium</div></div>
+            <div class="prob-bar-bg"><div class="prob-bar-fill" style="width:55%;background:linear-gradient(90deg,#e8a020,#f5c95c)"></div></div>
+            <div class="prob-label"><span><strong>55%</strong> probability</span><span>🩸 Hematology</span></div>
+            <p style="font-size:12px;color:var(--text-3);margin-top:8px">Hb 11.8 g/dL, fatigue complaint, low serum ferritin.</p>
+            <button class="btn btn-secondary btn-sm" style="margin-top:10px" onclick="showScreen('explain')">Why? (SHAP)</button>
+          </div>
+        </div>
+
+        <!-- Confidence breakdown -->
+        <div class="grid-2 mb-24">
+          <div class="card">
+            <h3>Modality Contribution</h3>
+            <svg width="100%" viewBox="0 0 280 160" style="font-family:'DM Sans',sans-serif">
+              <text x="10" y="24" font-size="11.5" fill="var(--text-2)">Blood Reports</text>
+              <rect x="130" y="12" width="100" height="14" rx="4" fill="var(--surface-2)"/>
+              <rect x="130" y="12" width="78" height="14" rx="4" fill="var(--blue-mid)" opacity=".8"/>
+              <text x="236" y="24" font-size="11" fill="var(--text-3)">78%</text>
+
+              <text x="10" y="54" font-size="11.5" fill="var(--text-2)">Medical Image</text>
+              <rect x="130" y="42" width="100" height="14" rx="4" fill="var(--surface-2)"/>
+              <rect x="130" y="42" width="66" height="14" rx="4" fill="var(--teal)" opacity=".8"/>
+              <text x="236" y="54" font-size="11" fill="var(--text-3)">66%</text>
+
+              <text x="10" y="84" font-size="11.5" fill="var(--text-2)">Clinical Text</text>
+              <rect x="130" y="72" width="100" height="14" rx="4" fill="var(--surface-2)"/>
+              <rect x="130" y="72" width="54" height="14" rx="4" fill="var(--amber)" opacity=".8"/>
+              <text x="236" y="84" font-size="11" fill="var(--text-3)">54%</text>
+
+              <text x="10" y="114" font-size="11.5" fill="var(--text-2)">Demographics</text>
+              <rect x="130" y="102" width="100" height="14" rx="4" fill="var(--surface-2)"/>
+              <rect x="130" y="102" width="40" height="14" rx="4" fill="#7c5cbf" opacity=".8"/>
+              <text x="236" y="114" font-size="11" fill="var(--text-3)">40%</text>
+            </svg>
+          </div>
+          <div class="card">
+            <h3>Recommended Actions</h3>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="padding:12px;background:#fde8e8;border-radius:8px;border-left:3px solid var(--red)">
+                <div style="font-weight:600;font-size:13.5px;color:#7a1010;margin-bottom:3px">🚨 Immediate</div>
+                <p style="font-size:13px;color:#8a2020">Schedule ECG and echocardiogram within 7 days. Start antihypertensive if confirmed.</p>
+              </div>
+              <div style="padding:12px;background:#fef3cd;border-radius:8px;border-left:3px solid var(--amber)">
+                <div style="font-weight:600;font-size:13.5px;color:#7a4a00;margin-bottom:3px">⚠ Soon (2 weeks)</div>
+                <p style="font-size:13px;color:#8a5a00">HbA1c test to confirm diabetes. Diet and lifestyle counselling.</p>
+              </div>
+              <div style="padding:12px;background:#d2f5e5;border-radius:8px;border-left:3px solid var(--green)">
+                <div style="font-weight:600;font-size:13.5px;color:#186640;margin-bottom:3px">✓ Routine (1 month)</div>
+                <p style="font-size:13px;color:#186640">Iron supplement, repeat CBC in 4 weeks.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="showScreen('explain')">🔍 View AI Explanations</button>
+          <button class="btn btn-secondary" onclick="showScreen('hospitals')">🗺️ Find Nearby Hospitals</button>
+          <button class="btn btn-teal" onclick="showScreen('report')">📄 Download PDF Report</button>
+        </div>
+      </div>
+
+      <!-- ══ SCREEN: EXPLAINABILITY ══ -->
+      <div id="screen-explain" class="screen">
+        <h1 class="page-title">AI Explainability Panel</h1>
+        <p class="page-subtitle">Why did MediFuse predict these conditions? — SHAP, LIME & Grad-CAM</p>
+
+        <div class="grid-2 mb-24">
+          <!-- SHAP -->
+          <div class="card">
+            <h3>SHAP Feature Importance — Hypertensive Heart Disease</h3>
+            <p style="font-size:13px;color:var(--text-2);margin-bottom:16px">Red bars increase risk; green bars decrease it. Longer = stronger influence.</p>
+            <div>
+              <div class="shap-row">
+                <span class="shap-feature">BP Systolic</span>
+                <div class="shap-bar-container">
+                  <div class="shap-bar shap-pos" style="width:120px"></div>
+                  <span class="shap-val">+0.42</span>
+                </div>
+              </div>
+              <div class="shap-row">
+                <span class="shap-feature">Age</span>
+                <div class="shap-bar-container">
+                  <div class="shap-bar shap-pos" style="width:96px"></div>
+                  <span class="shap-val">+0.34</span>
+                </div>
+              </div>
+              <div class="shap-row">
+                <span class="shap-feature">Family History</span>
+                <div class="shap-bar-container">
+                  <div class="shap-bar shap-pos" style="width:78px"></div>
+                  <span class="shap-val">+0.28</span>
+                </div>
+              </div>
+              <div class="shap-row">
+                <span class="shap-feature">BMI</span>
+                <div class="shap-bar-container">
+                  <div class="shap-bar shap-pos" style="width:54px"></div>
+                  <span class="shap-val">+0.19</span>
+                </div>
+              </div>
+              <div class="shap-row">
+                <span class="shap-feature">Physical Activity</span>
+                <div class="shap-bar-container">
+                  <div class="shap-bar shap-neg" style="width:60px"></div>
+                  <span class="shap-val">−0.21</span>
+                </div>
+              </div>
+              <div class="shap-row">
+                <span class="shap-feature">Cholesterol</span>
+                <div class="shap-bar-container">
+                  <div class="shap-bar shap-neg" style="width:36px"></div>
+                  <span class="shap-val">−0.12</span>
+                </div>
+              </div>
+              <div class="shap-row">
+                <span class="shap-feature">No Smoking</span>
+                <div class="shap-bar-container">
+                  <div class="shap-bar shap-neg" style="width:48px"></div>
+                  <span class="shap-val">−0.17</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Grad-CAM -->
+          <div class="card">
+            <h3>Grad-CAM — Chest X-Ray Analysis</h3>
+            <p style="font-size:13px;color:var(--text-2);margin-bottom:16px">Heat overlay highlights regions that influenced the cardiac prediction. Warmer = higher attention.</p>
+            <div style="display:flex;gap:20px;align-items:flex-start">
+              <div>
+                <div style="font-size:11px;color:var(--text-3);margin-bottom:6px;text-align:center">Original X-Ray</div>
+                <div style="width:160px;height:180px;background:#0f0f1a;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+                  <svg width="140" height="160" viewBox="0 0 140 160" style="opacity:.85">
+                    <!-- Stylized X-ray rib cage -->
+                    <ellipse cx="70" cy="80" rx="55" ry="65" fill="none" stroke="#334" stroke-width="12"/>
+                    <ellipse cx="70" cy="80" rx="30" ry="40" fill="#0f1a2a" stroke="#223" stroke-width="2"/>
+                    <path d="M15,55 Q35,40 55,58" stroke="#445" stroke-width="3" fill="none"/>
+                    <path d="M15,70 Q35,55 55,73" stroke="#445" stroke-width="3" fill="none"/>
+                    <path d="M15,85 Q35,70 55,88" stroke="#445" stroke-width="3" fill="none"/>
+                    <path d="M125,55 Q105,40 85,58" stroke="#445" stroke-width="3" fill="none"/>
+                    <path d="M125,70 Q105,55 85,73" stroke="#445" stroke-width="3" fill="none"/>
+                    <path d="M125,85 Q105,70 85,88" stroke="#445" stroke-width="3" fill="none"/>
+                    <ellipse cx="70" cy="78" rx="18" ry="22" fill="#1a2a3a" stroke="#334" stroke-width="1.5"/>
+                    <text x="70" y="150" text-anchor="middle" font-size="9" fill="#445">CHEST PA VIEW</text>
+                  </svg>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:11px;color:var(--text-3);margin-bottom:6px;text-align:center">Grad-CAM Overlay</div>
+                <div style="width:160px;height:180px;background:#0f0f1a;border-radius:8px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+                  <svg width="140" height="160" viewBox="0 0 140 160" style="position:absolute;opacity:.6">
+                    <ellipse cx="70" cy="80" rx="55" ry="65" fill="none" stroke="#334" stroke-width="12"/>
+                    <ellipse cx="70" cy="80" rx="30" ry="40" fill="#0f1a2a" stroke="#223" stroke-width="2"/>
+                  </svg>
+                  <div style="position:absolute;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle,rgba(255,50,0,.85) 0%,rgba(255,180,0,.6) 40%,rgba(255,255,0,.3) 70%,transparent 100%);top:30%;left:25%"></div>
+                  <div style="position:absolute;width:40px;height:35px;border-radius:50%;background:radial-gradient(circle,rgba(255,100,0,.5) 0%,transparent 80%);top:45%;left:55%"></div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:14px;display:flex;gap:8px;align-items:center;font-size:12px;color:var(--text-2)">
+              <div style="width:80px;height:10px;border-radius:5px;background:linear-gradient(90deg,#0040ff,#00ff80,#ffff00,#ff6000,#ff0000)"></div>
+              <span>Low → High Attention</span>
+            </div>
+            <div style="margin-top:10px;padding:10px;background:#fff8f0;border-radius:8px;font-size:12.5px;color:#7a4a00;border-left:3px solid var(--amber)">
+              🔍 <strong>Model attention concentrated</strong> on the left ventricular region and aortic knob — consistent with hypertensive cardiomegaly indicators.
+            </div>
+          </div>
+        </div>
+
+        <!-- Plain language explanation -->
+        <div class="card mb-24">
+          <h3>Plain Language Explanation (Patient-Friendly)</h3>
+          <div style="background:var(--blue-light);border-radius:10px;padding:18px;margin-bottom:14px">
+            <div style="font-size:13px;color:var(--text-2);margin-bottom:6px;font-weight:500">🌐 Showing in: English</div>
+            <p style="color:var(--navy);font-size:15px;line-height:1.7">The AI noticed that <strong>your blood pressure reading is quite high (138/88)</strong>, and combined with your age and some patterns seen in your chest X-ray, it suspects that your heart might be under extra strain. This doesn't mean you definitely have heart disease — it means <em>you should see a cardiologist soon</em> for a proper check-up.</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-secondary btn-sm">हिन्दी में पढ़ें</button>
+            <button class="btn btn-secondary btn-sm">தமிழில் படிக்கவும்</button>
+            <button class="btn btn-secondary btn-sm">বাংলায় পড়ুন</button>
+            <button class="btn btn-secondary btn-sm">🔊 Read Aloud</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SCREEN: HEATMAP ══ -->
+      <div id="screen-heatmap" class="screen">
+        <h1 class="page-title">Cross-Disease Correlation Heatmap</h1>
+        <p class="page-subtitle">Co-occurrence and comorbidity strength across disease categories in the patient population</p>
+
+        <div class="card mb-24">
+          <h3>Comorbidity Correlation Matrix (Pearson r)</h3>
+          <p style="font-size:13px;color:var(--text-2);margin-bottom:18px">Darker = stronger correlation. Hover cells for patient count. Values range from 0 (no relation) to 1 (highly co-occurring).</p>
+
+          <div style="overflow-x:auto">
+            <div style="display:grid;grid-template-columns:90px repeat(8, 60px);gap:3px;min-width:600px">
+              <!-- Header row -->
+              <div></div>
+              <div style="writing-mode:vertical-rl;font-size:10px;color:var(--text-3);padding:4px 0;height:80px;display:flex;align-items:flex-end;justify-content:center">Diabetes</div>
+              <div style="writing-mode:vertical-rl;font-size:10px;color:var(--text-3);padding:4px 0;height:80px;display:flex;align-items:flex-end;justify-content:center">Hypert.</div>
+              <div style="writing-mode:vertical-rl;font-size:10px;color:var(--text-3);padding:4px 0;height:80px;display:flex;align-items:flex-end;justify-content:center">Cardiac</div>
+              <div style="writing-mode:vertical-rl;font-size:10px;color:var(--text-3);padding:4px 0;height:80px;display:flex;align-items:flex-end;justify-content:center">Obesity</div>
+              <div style="writing-mode:vertical-rl;font-size:10px;color:var(--text-3);padding:4px 0;height:80px;display:flex;align-items:flex-end;justify-content:center">Thyroid</div>
+              <div style="writing-mode:vertical-rl;font-size:10px;color:var(--text-3);padding:4px 0;height:80px;display:flex;align-items:flex-end;justify-content:center">COPD</div>
+              <div style="writing-mode:vertical-rl;font-size:10px;color:var(--text-3);padding:4px 0;height:80px;display:flex;align-items:flex-end;justify-content:center">Anemia</div>
+              <div style="writing-mode:vertical-rl;font-size:10px;color:var(--text-3);padding:4px 0;height:80px;display:flex;align-items:flex-end;justify-content:center">CKD</div>
+
+              <!-- Data rows -->
+              <!-- Diabetes -->
+              <div style="font-size:11px;color:var(--text-2);display:flex;align-items:center;padding-right:6px">Diabetes</div>
+              <div class="hm-cell" style="background:#7b2020;height:52px">1.0</div>
+              <div class="hm-cell" style="background:#a33030;height:52px">0.82</div>
+              <div class="hm-cell" style="background:#b83838;height:52px">0.76</div>
+              <div class="hm-cell" style="background:#c94040;height:52px">0.88</div>
+              <div class="hm-cell" style="background:#5a6090;height:52px">0.34</div>
+              <div class="hm-cell" style="background:#4a7090;height:52px">0.28</div>
+              <div class="hm-cell" style="background:#507890;height:52px">0.41</div>
+              <div class="hm-cell" style="background:#a03a3a;height:52px">0.78</div>
+
+              <!-- Hypertension -->
+              <div style="font-size:11px;color:var(--text-2);display:flex;align-items:center;padding-right:6px">Hypertension</div>
+              <div class="hm-cell" style="background:#a33030;height:52px">0.82</div>
+              <div class="hm-cell" style="background:#7b2020;height:52px">1.0</div>
+              <div class="hm-cell" style="background:#922828;height:52px">0.91</div>
+              <div class="hm-cell" style="background:#b03030;height:52px">0.79</div>
+              <div class="hm-cell" style="background:#607898;height:52px">0.38</div>
+              <div class="hm-cell" style="background:#558090;height:52px">0.32</div>
+              <div class="hm-cell" style="background:#4a6880;height:52px">0.22</div>
+              <div class="hm-cell" style="background:#9a3030;height:52px">0.74</div>
+
+              <!-- Cardiac -->
+              <div style="font-size:11px;color:var(--text-2);display:flex;align-items:center;padding-right:6px">Cardiac</div>
+              <div class="hm-cell" style="background:#b83838;height:52px">0.76</div>
+              <div class="hm-cell" style="background:#922828;height:52px">0.91</div>
+              <div class="hm-cell" style="background:#7b2020;height:52px">1.0</div>
+              <div class="hm-cell" style="background:#b53535;height:52px">0.72</div>
+              <div class="hm-cell" style="background:#557898;height:52px">0.31</div>
+              <div class="hm-cell" style="background:#4a6888;height:52px">0.44</div>
+              <div class="hm-cell" style="background:#5a7090;height:52px">0.29</div>
+              <div class="hm-cell" style="background:#9a3030;height:52px">0.69</div>
+
+              <!-- Obesity -->
+              <div style="font-size:11px;color:var(--text-2);display:flex;align-items:center;padding-right:6px">Obesity</div>
+              <div class="hm-cell" style="background:#c94040;height:52px">0.88</div>
+              <div class="hm-cell" style="background:#b03030;height:52px">0.79</div>
+              <div class="hm-cell" style="background:#b53535;height:52px">0.72</div>
+              <div class="hm-cell" style="background:#7b2020;height:52px">1.0</div>
+              <div class="hm-cell" style="background:#557898;height:52px">0.36</div>
+              <div class="hm-cell" style="background:#4a5878;height:52px">0.25</div>
+              <div class="hm-cell" style="background:#4a6070;height:52px">0.18</div>
+              <div class="hm-cell" style="background:#986030;height:52px">0.58</div>
+            </div>
+          </div>
+
+          <!-- Legend -->
+          <div style="display:flex;align-items:center;gap:12px;margin-top:16px;font-size:12px;color:var(--text-2)">
+            <span>Correlation strength:</span>
+            <div style="display:flex;align-items:center;gap:4px">
+              <div style="width:20px;height:14px;border-radius:3px;background:#4a6888"></div>
+              <span>Low (0–0.3)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px">
+              <div style="width:20px;height:14px;border-radius:3px;background:#9a3030"></div>
+              <span>Med (0.6–0.8)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px">
+              <div style="width:20px;height:14px;border-radius:3px;background:#7b2020"></div>
+              <span>High (0.8–1.0)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Top Comorbidity Pairs (Population Analysis)</h3>
+          <table class="data-table">
+            <thead><tr><th>Disease A</th><th>Disease B</th><th>Correlation</th><th>Co-occurrence %</th><th>Clinical Note</th></tr></thead>
+            <tbody>
+              <tr><td>Hypertension</td><td>Cardiac Disease</td><td><span class="risk-badge risk-high" style="font-size:11px">0.91</span></td><td>68%</td><td>Strongly linked; screen together</td></tr>
+              <tr><td>Diabetes</td><td>Obesity</td><td><span class="risk-badge risk-high" style="font-size:11px">0.88</span></td><td>71%</td><td>Metabolic syndrome cluster</td></tr>
+              <tr><td>Diabetes</td><td>Hypertension</td><td><span class="risk-badge risk-high" style="font-size:11px">0.82</span></td><td>62%</td><td>Dual cardiovascular risk factor</td></tr>
+              <tr><td>Diabetes</td><td>CKD</td><td><span class="risk-badge risk-medium" style="font-size:11px">0.78</span></td><td>44%</td><td>Diabetic nephropathy pathway</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══ SCREEN: HOSPITALS ══ -->
+      <div id="screen-hospitals" class="screen">
+        <h1 class="page-title">Nearby Hospitals</h1>
+        <p class="page-subtitle">Based on your location: Chennai, Tamil Nadu · Filtered by specialties matching your conditions</p>
+
+        <div class="grid-2 mb-24">
+          <div>
+            <div class="map-placeholder mb-16">
+              <div class="map-grid"></div>
+              <!-- Roads -->
+              <svg style="position:absolute;inset:0;width:100%;height:100%">
+                <line x1="0" y1="50%" x2="100%" y2="50%" stroke="rgba(255,255,255,.6)" stroke-width="6"/>
+                <line x1="35%" y1="0" x2="35%" y2="100%" stroke="rgba(255,255,255,.6)" stroke-width="4"/>
+                <line x1="65%" y1="0" x2="65%" y2="100%" stroke="rgba(255,255,255,.4)" stroke-width="3"/>
+                <line x1="0" y1="30%" x2="100%" y2="30%" stroke="rgba(255,255,255,.3)" stroke-width="2"/>
+              </svg>
+              <!-- Map pins -->
+              <div class="map-pin blue" style="top:28%;left:32%"><div class="map-pin-inner"></div></div>
+              <div class="map-pin teal" style="top:42%;left:60%"><div class="map-pin-inner"></div></div>
+              <div class="map-pin red" style="top:60%;left:44%"><div class="map-pin-inner"></div></div>
+              <!-- User location -->
+              <div style="position:absolute;top:48%;left:48%;width:14px;height:14px;background:var(--blue);border-radius:50%;border:3px solid white;box-shadow:0 0 0 6px rgba(26,95,173,.2)"></div>
+              <!-- Popup -->
+              <div class="hospital-card-map" style="top:10%;left:42%">
+                <strong>Apollo Hospital</strong>
+                <div class="dist">📍 1.2 km away</div>
+                <div style="color:var(--text-3);font-size:11px">Cardiology, Endocrinology</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2)"><div style="width:10px;height:10px;border-radius:50%;background:var(--blue)"></div>Tertiary (Apollo)</div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2)"><div style="width:10px;height:10px;border-radius:50%;background:var(--teal)"></div>Government (GH)</div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2)"><div style="width:10px;height:10px;border-radius:50%;background:var(--red)"></div>Specialty Clinic</div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <!-- Hospital cards -->
+            <div class="card card-sm" style="border-left:4px solid var(--blue)">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start">
+                <div>
+                  <div style="font-weight:600;font-size:14.5px;color:var(--navy)">Apollo Hospital</div>
+                  <div style="font-size:12.5px;color:var(--text-2);margin:3px 0">Greams Road, Chennai · 🟢 Open</div>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+                    <span class="tag tag-blue" style="font-size:11px">Cardiology</span>
+                    <span class="tag tag-blue" style="font-size:11px">Endocrinology</span>
+                    <span class="tag tag-teal" style="font-size:11px">Hematology</span>
+                  </div>
+                </div>
+                <div style="text-align:right">
+                  <div style="font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--teal)">1.2 km</div>
+                  <div style="font-size:12px;color:var(--text-3)">⭐ 4.7</div>
+                </div>
+              </div>
+              <div style="margin-top:10px;display:flex;gap:8px">
+                <button class="btn btn-primary btn-sm">Book Appointment</button>
+                <button class="btn btn-secondary btn-sm">Directions</button>
+              </div>
+            </div>
+
+            <div class="card card-sm" style="border-left:4px solid var(--teal)">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start">
+                <div>
+                  <div style="font-weight:600;font-size:14.5px;color:var(--navy)">Govt. General Hospital</div>
+                  <div style="font-size:12.5px;color:var(--text-2);margin:3px 0">Park Town, Chennai · 🟢 Open 24/7</div>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+                    <span class="tag tag-teal" style="font-size:11px">General Medicine</span>
+                    <span class="tag tag-teal" style="font-size:11px">Cardiology</span>
+                  </div>
+                </div>
+                <div style="text-align:right">
+                  <div style="font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--teal)">2.8 km</div>
+                  <div style="font-size:12px;color:var(--text-3)">⭐ 4.2</div>
+                </div>
+              </div>
+              <div style="margin-top:10px;display:flex;gap:8px">
+                <button class="btn btn-teal btn-sm">Get Directions</button>
+                <button class="btn btn-secondary btn-sm">Free OPD Info</button>
+              </div>
+            </div>
+
+            <div class="card card-sm" style="border-left:4px solid var(--red)">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start">
+                <div>
+                  <div style="font-weight:600;font-size:14.5px;color:var(--navy)">Frontier Heart Clinic</div>
+                  <div style="font-size:12.5px;color:var(--text-2);margin:3px 0">Anna Nagar, Chennai · 🟡 Closes 8 PM</div>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+                    <span class="tag" style="background:#fde8e8;color:#b02020;font-size:11px">Cardiology</span>
+                    <span class="tag" style="background:#fde8e8;color:#b02020;font-size:11px">Cardiac Surgery</span>
+                  </div>
+                </div>
+                <div style="text-align:right">
+                  <div style="font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--teal)">4.1 km</div>
+                  <div style="font-size:12px;color:var(--text-3)">⭐ 4.9</div>
+                </div>
+              </div>
+              <div style="margin-top:10px;display:flex;gap:8px">
+                <button class="btn btn-primary btn-sm">Book Appointment</button>
+                <button class="btn btn-secondary btn-sm">Call Now</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SCREEN: REPORT ══ -->
+      <div id="screen-report" class="screen">
+        <h1 class="page-title">Medical Report Download</h1>
+        <p class="page-subtitle">Preview your AI-generated diagnostic report before downloading as PDF</p>
+
+        <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start">
+          <div class="report-preview" style="flex:1;min-width:300px">
+            <div class="report-header">
+              <div>
+                <div class="report-logo">MediFuse</div>
+                <div style="font-size:11px;color:var(--text-3)">AI-Assisted Diagnostic Report</div>
+              </div>
+              <div class="report-meta">
+                Report ID: MF-2026-08821-001<br>
+                Date: 12 February 2026<br>
+                Generated: 14:34 IST
+              </div>
+            </div>
+
+            <div class="report-section">
+              <div class="report-section-title">Patient Information</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px">
+                <div><span style="color:var(--text-3)">Name:</span> Ananya Sharma</div>
+                <div><span style="color:var(--text-3)">ID:</span> PT-2024-08821</div>
+                <div><span style="color:var(--text-3)">Age/Sex:</span> 42F</div>
+                <div><span style="color:var(--text-3)">Location:</span> Chennai, TN</div>
+                <div><span style="color:var(--text-3)">Physician:</span> Dr. Meera K.</div>
+                <div><span style="color:var(--text-3)">Hospital:</span> Apollo Chennai</div>
+              </div>
+            </div>
+
+            <div class="divider" style="margin:12px 0"></div>
+
+            <div class="report-section">
+              <div class="report-section-title">Prediction Summary</div>
+              <table style="width:100%;border-collapse:collapse;font-size:12.5px">
+                <thead>
+                  <tr style="border-bottom:1px solid var(--border)">
+                    <th style="padding:7px 0;text-align:left;font-weight:600;font-size:11px;color:var(--text-3)">Condition</th>
+                    <th style="padding:7px 0;text-align:center;font-size:11px;color:var(--text-3)">Probability</th>
+                    <th style="padding:7px 0;text-align:center;font-size:11px;color:var(--text-3)">Risk Level</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-bottom:1px solid var(--surface-2)">
+                    <td style="padding:7px 0">Hypertensive Heart Disease</td>
+                    <td style="text-align:center;font-weight:700;color:var(--red)">74%</td>
+                    <td style="text-align:center"><span class="risk-badge risk-high" style="font-size:10.5px">HIGH</span></td>
+                  </tr>
+                  <tr style="border-bottom:1px solid var(--surface-2)">
+                    <td style="padding:7px 0">Type 2 Diabetes</td>
+                    <td style="text-align:center;font-weight:700;color:var(--amber)">62%</td>
+                    <td style="text-align:center"><span class="risk-badge risk-medium" style="font-size:10.5px">MEDIUM</span></td>
+                  </tr>
+                  <tr>
+                    <td style="padding:7px 0">Iron Deficiency Anemia</td>
+                    <td style="text-align:center;font-weight:700;color:var(--amber)">55%</td>
+                    <td style="text-align:center"><span class="risk-badge risk-medium" style="font-size:10.5px">MEDIUM</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="divider" style="margin:12px 0"></div>
+
+            <div class="report-section">
+              <div class="report-section-title">Top Recommendations</div>
+              <ol style="padding-left:18px;font-size:12.5px;color:var(--text-2);display:flex;flex-direction:column;gap:5px">
+                <li>ECG and echocardiogram within 7 days</li>
+                <li>Antihypertensive medication evaluation by cardiologist</li>
+                <li>HbA1c test within 2 weeks</li>
+                <li>Dietitian consultation for glycemic control</li>
+                <li>Iron supplementation — ferrous sulphate 200mg TID</li>
+              </ol>
+            </div>
+
+            <div class="divider" style="margin:12px 0"></div>
+
+            <div style="font-size:10.5px;color:var(--text-3);line-height:1.6">
+              ⚠ <em>This report is AI-assisted and is intended to support — not replace — clinical decision-making. Final diagnosis must be confirmed by a licensed physician. MediFuse AI (v2.1) · Confidence calibrated on MIMIC-IV + NHM India dataset.</em>
+            </div>
+          </div>
+
+          <!-- Download options -->
+          <div style="width:220px;flex-shrink:0">
+            <div class="card mb-16">
+              <h3>Download Options</h3>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <button class="btn btn-primary" style="width:100%;justify-content:center">📥 Download PDF</button>
+                <button class="btn btn-secondary" style="width:100%;justify-content:center">📤 Share via WhatsApp</button>
+                <button class="btn btn-secondary" style="width:100%;justify-content:center">📧 Send to Doctor</button>
+                <button class="btn btn-secondary" style="width:100%;justify-content:center">🖨 Print Report</button>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Language</h3>
+              <select class="form-input form-select" style="margin-bottom:10px">
+                <option>English</option>
+                <option>Hindi (हिन्दी)</option>
+                <option>Tamil (தமிழ்)</option>
+                <option>Bengali (বাংলা)</option>
+                <option>Telugu (తెలుగు)</option>
+              </select>
+              <p style="font-size:12px;color:var(--text-3)">Report will be generated in the selected language.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SCREEN: ADMIN ══ -->
+      <div id="screen-admin" class="screen">
+        <h1 class="page-title">Admin Panel</h1>
+        <p class="page-subtitle">System management, model monitoring, and user administration</p>
+
+        <div class="grid-4 mb-24">
+          <div class="admin-stat card">
+            <div class="admin-stat-val" style="color:var(--blue)">1,248</div>
+            <div class="admin-stat-lbl">Total Patients</div>
+          </div>
+          <div class="admin-stat card">
+            <div class="admin-stat-val" style="color:var(--teal)">94.2%</div>
+            <div class="admin-stat-lbl">Model Accuracy</div>
+          </div>
+          <div class="admin-stat card">
+            <div class="admin-stat-val" style="color:var(--amber)">87</div>
+            <div class="admin-stat-lbl">Active Doctors</div>
+          </div>
+          <div class="admin-stat card">
+            <div class="admin-stat-val" style="color:var(--red)">3</div>
+            <div class="admin-stat-lbl">System Alerts</div>
+          </div>
+        </div>
+
+        <div class="grid-2 mb-24">
+          <!-- User Management -->
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+              <h3 style="margin:0">User Management</h3>
+              <button class="btn btn-primary btn-sm">+ Add User</button>
+            </div>
+            <table class="data-table">
+              <thead><tr><th>Name</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>Dr. Meera K.</td>
+                  <td><span class="tag tag-blue">Doctor</span></td>
+                  <td><span class="risk-badge risk-low" style="font-size:11px">Active</span></td>
+                  <td><button class="btn btn-secondary btn-sm">Edit</button></td>
+                </tr>
+                <tr>
+                  <td>Ananya Sharma</td>
+                  <td><span class="tag tag-teal">Patient</span></td>
+                  <td><span class="risk-badge risk-low" style="font-size:11px">Active</span></td>
+                  <td><button class="btn btn-secondary btn-sm">Edit</button></td>
+                </tr>
+                <tr>
+                  <td>Rajan T.</td>
+                  <td><span class="tag tag-teal">Patient</span></td>
+                  <td><span class="risk-badge risk-high" style="font-size:11px">Flagged</span></td>
+                  <td><button class="btn btn-primary btn-sm">Review</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Model Monitoring -->
+          <div class="card">
+            <h3>Model Performance Monitor</h3>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px">
+                  <span style="color:var(--text-2)">Diabetes Model (XGBoost)</span>
+                  <span style="font-weight:600;color:var(--green)">96.1%</span>
+                </div>
+                <div class="prob-bar-bg"><div class="prob-bar-fill" style="width:96%;background:var(--green)"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px">
+                  <span style="color:var(--text-2)">Cardiac (Multi-modal CNN)</span>
+                  <span style="font-weight:600;color:var(--green)">93.4%</span>
+                </div>
+                <div class="prob-bar-bg"><div class="prob-bar-fill" style="width:93%;background:var(--green)"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px">
+                  <span style="color:var(--text-2)">Thyroid (Tabular + NLP)</span>
+                  <span style="font-weight:600;color:var(--amber)">88.2%</span>
+                </div>
+                <div class="prob-bar-bg"><div class="prob-bar-fill" style="width:88%;background:var(--amber)"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px">
+                  <span style="color:var(--text-2)">COPD (Imaging CNN)</span>
+                  <span style="font-weight:600;color:var(--amber)">85.7%</span>
+                </div>
+                <div class="prob-bar-bg"><div class="prob-bar-fill" style="width:86%;background:var(--amber)"></div></div>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button class="btn btn-secondary btn-sm">Retrain Model</button>
+              <button class="btn btn-secondary btn-sm">Export Metrics</button>
+              <button class="btn btn-primary btn-sm">Deploy New Version</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- System Alerts -->
+        <div class="card">
+          <h3>System Alerts</h3>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="padding:12px 14px;background:#fde8e8;border-radius:8px;border-left:3px solid var(--red);display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:600;font-size:13.5px;color:#7a1010">🚨 Model Drift Detected — COPD Classifier</div>
+                <div style="font-size:12.5px;color:#8a2020;margin-top:2px">Accuracy dropped 3.2% over last 7 days. Review training data distribution.</div>
+              </div>
+              <button class="btn btn-secondary btn-sm">Investigate</button>
+            </div>
+            <div style="padding:12px 14px;background:#fef3cd;border-radius:8px;border-left:3px solid var(--amber);display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:600;font-size:13.5px;color:#7a4a00">⚠ Storage at 78% capacity</div>
+                <div style="font-size:12.5px;color:#8a5a00;margin-top:2px">Medical image storage approaching limit. Archive or expand storage.</div>
+              </div>
+              <button class="btn btn-secondary btn-sm">Manage</button>
+            </div>
+            <div style="padding:12px 14px;background:#d2f5e5;border-radius:8px;border-left:3px solid var(--green);display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:600;font-size:13.5px;color:#186640">✓ Language model updated — 3 new languages added</div>
+                <div style="font-size:12.5px;color:#1a7a46;margin-top:2px">Odia, Punjabi, and Gujarati now supported for patient reports.</div>
+              </div>
+              <button class="btn btn-secondary btn-sm">View</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ═══════ LANGUAGE MODAL ═══════ -->
+<div class="modal-backdrop" id="lang-modal">
+  <div class="modal">
+    <h2 class="modal-title">🌐 Select Language / भाषा चुनें</h2>
+    <div class="lang-grid">
+      <div class="lang-opt selected" onclick="selectLang(this)">
+        <span class="lang-native">English</span>EN
+      </div>
+      <div class="lang-opt" onclick="selectLang(this)">
+        <span class="lang-native">हिन्दी</span>HI
+      </div>
+      <div class="lang-opt" onclick="selectLang(this)">
+        <span class="lang-native">தமிழ்</span>TA
+      </div>
+      <div class="lang-opt" onclick="selectLang(this)">
+        <span class="lang-native">বাংলা</span>BN
+      </div>
+      <div class="lang-opt" onclick="selectLang(this)">
+        <span class="lang-native">తెలుగు</span>TE
+      </div>
+      <div class="lang-opt" onclick="selectLang(this)">
+        <span class="lang-native">मराठी</span>MR
+      </div>
+      <div class="lang-opt" onclick="selectLang(this)">
+        <span class="lang-native">ಕನ್ನಡ</span>KN
+      </div>
+      <div class="lang-opt" onclick="selectLang(this)">
+        <span class="lang-native">ગુજરાતી</span>GU
+      </div>
+      <div class="lang-opt" onclick="selectLang(this)">
+        <span class="lang-native">ਪੰਜਾਬੀ</span>PA
+      </div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-primary" onclick="closeLangModal()">Apply Language</button>
+      <button class="btn btn-secondary" onclick="closeLangModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Startup: show login
+  document.getElementById('login-page').style.display = 'flex';
+  document.getElementById('login-page').classList.add('visible');
+
+  function showApp() {
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('login-page').classList.remove('visible');
+    document.getElementById('app-shell').style.display = 'block';
+    document.getElementById('app-shell').classList.add('visible');
+    showScreen('landing');
+  }
+
+  function showScreen(name) {
+    // Hide all screens in app
+    document.querySelectorAll('#app-shell .screen').forEach(s => {
+      s.classList.remove('visible');
+    });
+    const target = document.getElementById('screen-' + name);
+    if (target) {
+      target.classList.add('visible');
+    }
+    // Update tabs
+    document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.sidebar-item').forEach(t => t.classList.remove('active'));
+  }
+
+  function selectRole(el, role) {
+    document.querySelectorAll('.role-opt').forEach(r => r.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function openLangModal() {
+    document.getElementById('lang-modal').classList.add('open');
+  }
+  function closeLangModal() {
+    document.getElementById('lang-modal').classList.remove('open');
+  }
+  function selectLang(el) {
+    document.querySelectorAll('.lang-opt').forEach(l => l.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  // Close modal on backdrop click
+  document.getElementById('lang-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeLangModal();
+  });
+</script>
+</body>
+</html>
